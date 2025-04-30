@@ -9,6 +9,8 @@ git remote add origin https://github.com/
 git remote add [alias] [url]
 //参数[alias]为别名， [url]为远程仓库的地址
 
+git pull github main
+git push github main
 git push [alias] [branch]
 //[alias]为上面设置的别名，[branch]为分支名称。
 //如果省略[branch]，Git会把本地的master分支推送到远程主机。
