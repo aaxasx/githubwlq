@@ -75,3 +75,6 @@ int main(int argc, char const *argv[])
 ```
 
 install(DIRECTORY launch DESTINATION shere/${PROJECT_NAME})
+
+当include引用报红时，在c_cpp_properties.json文件内部添加引用路径，例："${workspaceFolder}/install/base_interfaces/include/base_interfaces/**"其中中间那一段是我们在install目录下找到的相应文件的相对路径
+
