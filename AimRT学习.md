@@ -1,5 +1,5 @@
 
-
+#### AimRT源码
 AimRT源码中build.sh配置如下：
 ```
 #!/bin/bash
@@ -47,6 +47,7 @@ cmake -B build \
 cmake --build build --config Release --target install --parallel $(nproc)  #$(nproc)改为1时，可单线程执行，使得报错可被捕捉。探究$(nproc)是什么
 ```
 
+#### hello_world实例
 编译：
 ```
 cmake -B build
@@ -72,3 +73,7 @@ cnbot@cnrobot-pad:~/first_try/build/src/app/helloworld_app$ ./helloworld_app ../
 
 /cmake/GetAimRT.cmake文件中，GIT_TAG版本改为你想引用的版本，版本号从相应项目中的tag标签中获取，目前最新版本为1.0.0-rc1
 
+
+#### 配置aimrt_cli，使得在任何目录下皆可运行
+cnbot@cnrobot-pad:~/AimRT/build/install/bin$ sudo cp -raf aimrt_cli /usr/local/bin
+ 
