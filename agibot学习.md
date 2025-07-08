@@ -1,7 +1,6 @@
 
-##### agibot_x1_infer_CN/src/module/sim_module/src/sim_module.cc
+## 1. agibot_x1_infer_CN     sim_module.cc粗解
 文件实现了sim_module.h所定义的各个函数
-
 1. initialize(aimrt::CoreRef core)
 该函数负责加载配置文件，初始化订阅者、发布者和执行器，为仿真模块的运行做准备。
 首先获取了aimrt框架的核心句柄`core_=core`，然后加载配置文件，再获取关节命令的订阅joint_cmd_sub_，获取 IMU 数据的发布者imu_data_pub_，获取关节状态的发布者joint_state_pub_，最后获取渲染执行器render_executor_，初始化成功。
@@ -56,23 +55,22 @@ PID（比例-积分-微分）控制器是一种最广泛应用的反馈控制机
 
 在机器人开发框架中，IMU数据消息对象是一种标准化的数据结构，用于封装和传输来自IMU传感器的测量数据。这种消息对象通常由机器人中间件（如ROS2）定义，用于系统内部各模块间的通信。我们常提到的就是IMU数据消息对象
 
-
-mujoco 基本语法，sim2real仿真软件和现实之间的差异，以及如何弥补差异
-
-
 状态机，控制器（如何激活），
 
+problem：mujoco 基本语法，sim2real仿真软件和现实之间的差异，以及如何弥补差异
 problem：发布什么命令，创建什么发布者与订阅者，
 
-查看topic信息:
+## 查看topic信息
 ```
-./build.sh
+./build.sh #编译
 cd build/
-./run_sim.sh
+./run_sim.sh #执行
 source build/ros2_setup.sh
 ros2 topic list #列出话题
 ros2 topic echo /imu/data #查看话题
 ```
+
+
 设置yaml并解析,并构建一个单独的module，包含src，cfg，include等等文件夹
 1.碰撞检测  2.动态规划末端最优路径（避障）  3.基于端到端 4.有视觉检测
 两实现个模块，一个碰撞检测动态规划，一个识谱做动作
@@ -83,7 +81,9 @@ mjcf文件要有手部的xml文件(主线)
 
 保持控制器状态与规划控制器状态 过渡状态
 
-在运行build.sh文件时发现有连接不上github拉取aimrt的情况，于是运行了以下命令
+
+## 2. 换vpn后操作
+在运行build.sh文件时发现有连接不上github拉取aimrt的情况，可能是因为换了vpn的缘故，于是运行了以下命令：
 cnbot@cnrobot-pad:~$ git config --global http.proxy http://127.0.0.1:7897
 git config --global https.proxy http://127.0.0.1:7897
 export http_proxy=http://127.0.0.1:7897
@@ -92,3 +92,67 @@ cnbot@cnrobot-pad:~$ echo $http_proxy
 echo $https_proxy
 http://127.0.0.1:7897
 http://127.0.0.1:7897
+
+
+## 3. 小机器人开机等操作
+```
+sudo systemctl restart bot_boot.service //etc/systemd/system内包含这个服务文件，使用此两条命令是因为要修改代码，因此得把开机自启动的服务给关闭掉
+sudo systemctl stop bot_boot.service
+./normal_build.sh
+./build/run.sh
+//关机前记得按start失能
+sudo shutdown now //断开连接
+
+```
+
+
+## 4. 学习内容 
+1. 旋转矩阵，正解，逆解，笛卡尔坐标
+2. 文件io，网络编程，linux基本指令，cmake学习，模块编写，路径规划实现
+3. ctrl+shift+i 启动.clang-format规范代码缩进布局
+
+
+## 5. urdf文件学习
+
+以下语句可以显示模型的joint与link的关联关系
+`urdf_to_graphviz src/z1_moveit2_ws/src/z1_description/urdf/z1.urdf z1_graph`
+
+导入urdf模型得到一个包以后，运行代码：
+```
+colcon build
+source install/setup.bash
+ros2 launch result demo.launch.py 
+
+ros2 launch moveit2_tutorials demo.launch.py //原版
+
+ros2 run moveit_setup_assistant moveit_setup_assistant //运行配置助手
+
+X轴旋转量，英文表达：roll  
+Y轴旋转量，英文表达：pith  
+Z轴旋转量，英文表达：yaw
+
+手动将Xacro文件转换为纯URDF文件来检查最终结果：
+ros2 run xacro xacro your_robot.urdf.xacro > final_debug.urdf
+```
+
+## moveit与机器通信
+```
+vim ~/.bashrc
+export ROS_DOMAIN_ID=1    //在bashrc里面修改
+```
+
+
+## 垃圾错误
+1、忘记编译,或编译后忘记source install/setup.bash
+2、meches文件未导入
+3、开机自启动未stop
+4、
+
+
+
+这行URDF代码定义了一个刚体的惯性张量（inertia tensor），用于描述该部件对旋转运动的抗拒程度。参数`ixx`、`iyy`、`izz`分别表示绕X、Y、Z轴的转动惯量，这里都设置为0.001，说明该物体在三个主轴方向上的转动惯量相等，通常对应于质量分布均匀的立方体或球体。`ixy`、`ixz`、`iyz`为惯性张量的非对角项，这里都为0，表示惯性主轴与坐标轴对齐，没有耦合项。这样的设置简化了动力学计算，适合对称且质量分布均匀的零件
+
+
+## 关于urdf文件
+1.电机行动面（正对着裸露电机的那一面）对应的方向即为z轴正方向，绕此方向逆时针转动即为yaw正方向，顺时针即为负方向
+2.

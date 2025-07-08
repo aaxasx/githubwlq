@@ -1,4 +1,4 @@
-```
+```bash
 git init
 git config --global user.email "MyEmail@gmail.com"
 git config --global user.name "My Name"
